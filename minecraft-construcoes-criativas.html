@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minecraft Construções Criativas I – Happy Code</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --grass: #5C9A27;
+    --grass-dark: #3E7A0E;
+    --dirt: #8B5A2B;
+    --stone: #7A7A7A;
+    --sky: #5BB8F5;
+    --sky-dark: #2E88D4;
+    --creeper: #4CAF50;
+    --gold: #FFD700;
+    --diamond: #4DD9E8;
+    --redstone: #E53935;
+    --wood: #A0522D;
+    --sand: #F4D03F;
+    --night: #1A1A2E;
+    --pixel: 4px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--sky);
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect x='2' y='2' width='16' height='16' fill='%235C9A27' stroke='%233E7A0E' stroke-width='2'/%3E%3C/svg%3E"), auto;
+  }
+
+  /* Pixel border mixin */
+  .pixel-border {
+    box-shadow:
+      -4px 0 0 0 #000,
+      4px 0 0 0 #000,
+      0 -4px 0 0 #000,
+      0 4px 0 0 #000,
+      -4px -4px 0 0 #000,
+      4px -4px 0 0 #000,
+      -4px 4px 0 0 #000,
+      4px 4px 0 0 #000;
+  }
+
+  /* =================== HERO =================== */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #87CEEB 0%, #5BB8F5 40%, #5C9A27 40%, #5C9A27 50%, #8B5A2B 50%, #8B5A2B 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 80px;
+  }
+
+  /* Floating clouds */
+  .cloud {
+    position: absolute;
+    background: white;
+    image-rendering: pixelated;
+  }
+  .cloud-1 { width: 80px; height: 40px; top: 8%; left: 5%; animation: float-cloud 20s linear infinite; }
+  .cloud-2 { width: 120px; height: 50px; top: 15%; left: 60%; animation: float-cloud 28s linear infinite 5s; }
+  .cloud-3 { width: 60px; height: 30px; top: 5%; right: 10%; animation: float-cloud 24s linear infinite 10s; }
+
+  @keyframes float-cloud {
+    from { transform: translateX(-200px); }
+    to { transform: translateX(110vw); }
+  }
+
+  /* Pixel sun */
+  .sun {
+    position: absolute;
+    top: 5%;
+    right: 8%;
+    width: 64px;
+    height: 64px;
+    background: var(--gold);
+    image-rendering: pixelated;
+    box-shadow: 4px 4px 0 #E6C000, inset -8px -8px 0 #E6C000;
+    animation: sun-bob 3s ease-in-out infinite;
+  }
+  @keyframes sun-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* Minecraft blocks row */
+  .blocks-row {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  .mc-block {
+    flex: 1;
+    min-width: 40px;
+    height: 80px;
+    image-rendering: pixelated;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mc-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 8px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 8px);
+  }
+
+  .block-grass { background: var(--grass); }
+  .block-dirt { background: var(--dirt); }
+  .block-stone { background: #888; }
+  .block-wood { background: var(--wood); }
+  .block-sand { background: var(--sand); }
+  .block-diamond { background: #4DD9E8; }
+
+  /* Hero content */
+  .hero-badge {
+    background: var(--grass-dark);
+    color: white;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    image-rendering: pixelated;
+    box-shadow: 4px 4px 0 #1a4a00, inset -2px -2px 0 rgba(0,0,0,0.3);
+    animation: fadeInDown 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(18px, 4vw, 36px);
+    color: white;
+    text-align: center;
+    line-height: 1.6;
+    text-shadow:
+      4px 4px 0 #1a4a00,
+      -2px -2px 0 rgba(0,0,0,0.5);
+    animation: fadeInDown 0.8s ease 0.2s both;
+    margin-bottom: 8px;
+  }
+
+  .hero-title span {
+    color: var(--gold);
+    text-shadow: 4px 4px 0 #8B6000, -2px -2px 0 rgba(0,0,0,0.5);
+  }
+
+  .hero-subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(14px, 2.5vw, 20px);
+    color: #e8f5e9;
+    text-align: center;
+    margin: 16px 0 32px;
+    max-width: 600px;
+    font-weight: 700;
+    animation: fadeInDown 0.8s ease 0.4s both;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  }
+
+  .hero-cta {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    background: var(--grass);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    cursor: pointer;
+    box-shadow: 0 8px 0 var(--grass-dark), 4px 0 0 #3a6b10, 0 0 0 4px #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+    animation: fadeInUp 0.8s ease 0.6s both;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .hero-cta:hover {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 var(--grass-dark), 4px 0 0 #3a6b10, 0 0 0 4px #000;
+  }
+
+  /* Floating items */
+  .float-item {
+    position: absolute;
+    font-size: 40px;
+    animation: item-float 4s ease-in-out infinite;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+  }
+  .float-1 { top: 20%; left: 3%; animation-delay: 0s; }
+  .float-2 { top: 30%; right: 4%; animation-delay: 1s; }
+  .float-3 { top: 55%; left: 5%; animation-delay: 2s; font-size: 30px; }
+  .float-4 { top: 50%; right: 6%; animation-delay: 0.5s; font-size: 32px; }
+
+  @keyframes item-float { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-15px) rotate(5deg)} }
+
+  /* Steve pixel art */
+  .steve-container {
+    position: relative;
+    margin: 20px 0;
+    animation: fadeInUp 0.8s ease 0.8s both;
+  }
+
+  .steve {
+    width: 80px;
+    height: 100px;
+    image-rendering: pixelated;
+    background:
+      /* head */
+      linear-gradient(to bottom, transparent 0%, transparent 0%) 20px 0/40px 40px,
+      /* body */
+      linear-gradient(to bottom, #2E88D4 0%, #2E88D4 100%) 15px 40px/50px 30px,
+      /* legs */
+      linear-gradient(to bottom, #3E7A0E 0%, #3E7A0E 100%) 15px 70px/20px 30px,
+      linear-gradient(to bottom, #1a4a00 0%, #1a4a00 100%) 45px 70px/20px 30px;
+    background-repeat: no-repeat;
+  }
+
+  @keyframes fadeInDown { from{opacity:0;transform:translateY(-30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* =================== SECTIONS =================== */
+  section { padding: 80px 20px; }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .section-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 22px);
+    margin-bottom: 12px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .section-sub {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 60px;
+    font-weight: 600;
+  }
+
+  /* =================== WHY SECTION =================== */
+  .why-section {
+    background: var(--night);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .why-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 40px);
+    pointer-events: none;
+  }
+
+  .why-section .section-title { color: var(--gold); }
+  .why-section .section-sub { color: #aaa; }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .why-card {
+    background: rgba(255,255,255,0.05);
+    border: 3px solid rgba(255,255,255,0.1);
+    padding: 32px 24px;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+    overflow: hidden;
+  }
+
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+
+  .why-card:nth-child(1)::before { background: var(--grass); }
+  .why-card:nth-child(2)::before { background: var(--diamond); }
+  .why-card:nth-child(3)::before { background: var(--gold); }
+  .why-card:nth-child(4)::before { background: var(--redstone); }
+
+  .why-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.3); }
+
+  .why-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.2));
+  }
+
+  .why-card h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: white;
+    margin-bottom: 12px;
+    line-height: 1.8;
+  }
+
+  .why-card p {
+    color: #bbb;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* =================== WHAT THEY LEARN =================== */
+  .learn-section { background: #f0f9e8; }
+  .learn-section .section-title { color: var(--grass-dark); }
+
+  .chapters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    margin-top: 20px;
+  }
+
+  .chapter-card {
+    background: white;
+    border: 4px solid #000;
+    position: relative;
+    box-shadow: 8px 8px 0 #000;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .chapter-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 #000;
+  }
+
+  .chapter-header {
+    padding: 20px 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .chapter-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 8px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 8px);
+  }
+
+  .ch-1 .chapter-header { background: var(--sky-dark); }
+  .ch-2 .chapter-header { background: #7B1FA2; }
+  .ch-3 .chapter-header { background: var(--redstone); }
+
+  .chapter-number {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-emoji {
+    font-size: 40px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+  }
+
+  .chapter-body { padding: 24px; }
+
+  .concept-tag {
+    display: inline-block;
+    background: #f0f9e8;
+    border: 2px solid var(--grass);
+    color: var(--grass-dark);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 6px 10px;
+    margin: 4px 4px 4px 0;
+    line-height: 1.4;
+  }
+
+  .ch-2 .concept-tag { background: #f3e5f5; border-color: #7B1FA2; color: #4a0072; }
+  .ch-3 .concept-tag { background: #ffebee; border-color: var(--redstone); color: #b71c1c; }
+
+  /* =================== SKILLS SECTION =================== */
+  .skills-section {
+    background: linear-gradient(135deg, var(--grass-dark) 0%, #1B5E20 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skills-section::after {
+    content: '⛏️🗡️🏹🪓🔱';
+    position: absolute;
+    font-size: 120px;
+    opacity: 0.04;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .skills-section .section-title { color: var(--gold); }
+  .skills-section .section-sub { color: #a5d6a7; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .skill-item {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .skill-item:hover::before { opacity: 1; }
+  .skill-item:hover { transform: scale(1.05); border-color: var(--gold); }
+
+  .skill-icon { font-size: 32px; display: block; margin-bottom: 10px; }
+  .skill-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: white;
+    line-height: 1.6;
+  }
+
+  /* =================== INFO BOX =================== */
+  .info-section { background: white; }
+  .info-section .section-title { color: var(--night); }
+
+  .info-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 #000;
+    overflow: hidden;
+  }
+
+  .info-block {
+    padding: 32px 24px;
+    text-align: center;
+    border-right: 3px solid #000;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .info-block:last-child { border-right: none; }
+  .info-block:hover { filter: brightness(1.1); }
+
+  .info-block:nth-child(1) { background: #E3F2FD; }
+  .info-block:nth-child(2) { background: #F3E5F5; }
+  .info-block:nth-child(3) { background: #E8F5E9; }
+  .info-block:nth-child(4) { background: #FFF8E1; }
+  .info-block:nth-child(5) { background: #FCE4EC; }
+
+  .info-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+  .info-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #555;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .info-value {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #111;
+  }
+
+  /* =================== QUOTE / TESTIMONIAL =================== */
+  .quote-section {
+    background: var(--sand);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quote-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(139,90,43,0.1) 0px, rgba(139,90,43,0.1) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(0deg, rgba(139,90,43,0.1) 0px, rgba(139,90,43,0.1) 1px, transparent 1px, transparent 20px);
+  }
+
+  .quote-box {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .quote-mark {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 80px;
+    color: var(--dirt);
+    opacity: 0.4;
+    line-height: 1;
+    display: block;
+  }
+
+  .quote-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 900;
+    color: var(--dirt);
+    line-height: 1.5;
+    margin: -20px 0 24px;
+  }
+
+  .quote-author {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--wood);
+  }
+
+  /* =================== CTA FINAL =================== */
+  .cta-section {
+    background: var(--night);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    image-rendering: pixelated;
+    animation: twinkle 2s ease-in-out infinite;
+  }
+
+  @keyframes twinkle { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .cta-section .section-title { color: white; }
+
+  .cta-big {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 24px);
+    color: white;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+
+  .cta-big span { color: var(--gold); }
+
+  .cta-desc {
+    color: #aaa;
+    font-size: 18px;
+    margin-bottom: 48px;
+    font-weight: 600;
+  }
+
+  .cta-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 20px 40px;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #8B6000, 4px 0 0 #8B6000, 0 0 0 4px #000;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: inline-block;
+    text-decoration: none;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  .cta-btn:hover {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #8B6000, 4px 0 0 #8B6000, 0 0 0 4px #000;
+  }
+
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 8px 0 #8B6000, 4px 0 0 #8B6000, 0 0 0 4px #000, 0 0 30px rgba(255,215,0,0.3); }
+    50% { box-shadow: 0 8px 0 #8B6000, 4px 0 0 #8B6000, 0 0 0 4px #000, 0 0 60px rgba(255,215,0,0.6); }
+  }
+
+  /* =================== FOOTER =================== */
+  footer {
+    background: #111;
+    color: #555;
+    text-align: center;
+    padding: 24px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 2;
+  }
+
+  footer span { color: var(--grass); }
+
+  /* =================== PROGRESS BAR =================== */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 6px;
+    background: var(--gold);
+    z-index: 9999;
+    transition: width 0.1s;
+    box-shadow: 0 0 10px var(--gold);
+  }
+
+  /* =================== SCROLL ANIMATIONS =================== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* =================== RESPONSIVE =================== */
+  @media (max-width: 600px) {
+    .info-blocks { grid-template-columns: 1fr 1fr; }
+    .info-block { border-bottom: 3px solid #000; }
+    .hero-title { font-size: 16px; }
+  }
+
+  /* Pixelated dividers */
+  .pixel-divider {
+    height: 32px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--grass) 0px, var(--grass) 32px,
+      var(--grass-dark) 32px, var(--grass-dark) 64px
+    );
+  }
+  .pixel-divider-sand {
+    height: 32px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--sand) 0px, var(--sand) 32px,
+      #e5c030 32px, #e5c030 64px
+    );
+  }
+  .pixel-divider-night {
+    height: 32px;
+    background: repeating-linear-gradient(
+      90deg,
+      #1A1A2E 0px, #1A1A2E 32px,
+      #16213E 32px, #16213E 64px
+    );
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- =================== HERO =================== -->
+<section class="hero">
+  <div class="sun"></div>
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+
+  <span class="float-item float-1">⛏️</span>
+  <span class="float-item float-2">💎</span>
+  <span class="float-item float-3">🟩</span>
+  <span class="float-item float-4">🏆</span>
+
+  <div class="hero-badge">▶ HAPPY CODE PRESENTS</div>
+
+  <h1 class="hero-title">
+    MINECRAFT<br>
+    <span>CONSTRUÇÕES</span><br>
+    CRIATIVAS I
+  </h1>
+
+  <p class="hero-subtitle">
+    Onde o seu filho aprende programação de verdade — brincando no Minecraft! 🎮
+  </p>
+
+  <a href="https://wa.me/5554992178125?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20o%20curso%20Minecraft%20Constru%C3%A7%C3%B5es%20Criativas%20I%20%F0%9F%8E%AE" target="_blank" class="hero-cta">▶ SAIBA MAIS</a>
+
+  <div class="blocks-row">
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-dirt"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-wood"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-stone"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-dirt"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-diamond"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-sand"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-wood"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-dirt"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-stone"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-dirt"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-wood"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-stone"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-dirt"></div>
+    <div class="mc-block block-grass"></div>
+    <div class="mc-block block-diamond"></div>
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<!-- =================== WHY SECTION =================== -->
+<section class="why-section" id="saiba-mais">
+  <div class="container">
+    <h2 class="section-title reveal">💡 POR QUE ISSO É DIFERENTE?</h2>
+    <p class="section-sub reveal">Não é só jogar. É aprender programação enquanto cria mundos incríveis.</p>
+
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <span class="why-icon">🎮</span>
+        <h3>APRENDER BRINCANDO DE VERDADE</h3>
+        <p>Seu filho vai construir mini-games reais dentro do Minecraft — não apenas assistir aulas. Cada conceito de programação vira um projeto jogável.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">💻</span>
+        <h3>PROGRAMAÇÃO DE VERDADE</h3>
+        <p>Lógica de programação, estruturas condicionais, loops e variáveis — os mesmos fundamentos que os programadores usam, mas de um jeito que faz sentido para crianças.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">🧠</span>
+        <h3>RACIOCÍNIO & PENSAMENTO COMPUTACIONAL</h3>
+        <p>Resolver problemas, pensar de forma estruturada e criar soluções criativas são habilidades do futuro que se desenvolvem naturalmente ao longo das aulas.</p>
+      </div>
+      <div class="why-card reveal">
+        <span class="why-icon">🤝</span>
+        <h3>COLABORAÇÃO E CRIATIVIDADE</h3>
+        <p>Trabalhando em duplas, os alunos desenvolvem comunicação, trabalho em equipe e criatividade — competências essenciais do século XXI.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="pixel-divider-sand"></div>
+
+<!-- =================== WHAT THEY LEARN =================== -->
+<section class="learn-section">
+  <div class="container">
+    <h2 class="section-title reveal">⛏️ O QUE SEU FILHO VAI CRIAR?</h2>
+    <p class="section-sub reveal">3 capítulos, 3 projetos épicos — cada um com novos superpoderes de programação</p>
+
+    <div class="chapters">
+      <div class="chapter-card ch-1 reveal">
+        <div class="chapter-header">
+          <div class="chapter-number">CAPÍTULO 01 · 2h</div>
+          <div class="chapter-name">CIRCUITO<br>DE GELO</div>
+          <span class="chapter-emoji">⛵</span>
+        </div>
+        <div class="chapter-body">
+          <p style="color:#555;font-size:14px;line-height:1.7;margin-bottom:16px;">
+            Um circuito de gelo com barco controlado pelas setas do teclado! Seu filho vai aprender a programar os controles e criar a pista.
+          </p>
+          <div>
+            <span class="concept-tag">IF / ELSE</span>
+            <span class="concept-tag">CONDICIONAIS</span>
+            <span class="concept-tag">LOOP</span>
+            <span class="concept-tag">EVENTOS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-card ch-2 reveal">
+        <div class="chapter-header">
+          <div class="chapter-number">CAPÍTULO 02 · 2h</div>
+          <div class="chapter-name">CASA<br>FANTASMA</div>
+          <span class="chapter-emoji">👻</span>
+        </div>
+        <div class="chapter-body">
+          <p style="color:#555;font-size:14px;line-height:1.7;margin-bottom:16px;">
+            Uma casa assombrada com eventos interativos! Portas que abrem, fantasmas que aparecem — tudo programado por eles.
+          </p>
+          <div>
+            <span class="concept-tag">CONDICIONAIS+</span>
+            <span class="concept-tag">REPETIÇÃO</span>
+            <span class="concept-tag">EVENTOS</span>
+            <span class="concept-tag">MAKECODE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter-card ch-3 reveal">
+        <div class="chapter-header">
+          <div class="chapter-number">CAPÍTULO 03 · 2h</div>
+          <div class="chapter-name">TIRO<br>AO ALVO</div>
+          <span class="chapter-emoji">🏹</span>
+        </div>
+        <div class="chapter-body">
+          <p style="color:#555;font-size:14px;line-height:1.7;margin-bottom:16px;">
+            Uma barraca de tiro ao alvo com placar de pontos! Aprende a criar sistemas de pontuação com variáveis.
+          </p>
+          <div>
+            <span class="concept-tag">VARIÁVEIS</span>
+            <span class="concept-tag">PLACAR</span>
+            <span class="concept-tag">CENÁRIOS</span>
+            <span class="concept-tag">MAKECODE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<!-- =================== SKILLS =================== -->
+<section class="skills-section">
+  <div class="container">
+    <h2 class="section-title reveal">🏆 HABILIDADES QUE SEU FILHO GANHA</h2>
+    <p class="section-sub reveal">Muito além do jogo — competências reais para o futuro</p>
+
+    <div class="skills-grid">
+      <div class="skill-item reveal">
+        <span class="skill-icon">🧩</span>
+        <span class="skill-name">PENSAMENTO LÓGICO</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">💡</span>
+        <span class="skill-name">CRIATIVIDADE</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🔍</span>
+        <span class="skill-name">RESOLUÇÃO DE PROBLEMAS</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🤝</span>
+        <span class="skill-name">COLABORAÇÃO</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🖥️</span>
+        <span class="skill-name">PENSAMENTO COMPUTACIONAL</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🎯</span>
+        <span class="skill-name">FOCO & ATENÇÃO</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🗣️</span>
+        <span class="skill-name">COMUNICAÇÃO</span>
+      </div>
+      <div class="skill-item reveal">
+        <span class="skill-icon">🚀</span>
+        <span class="skill-name">INICIATIVA PRÓPRIA</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== INFO =================== -->
+<section class="info-section">
+  <div class="container">
+    <h2 class="section-title reveal" style="margin-bottom:48px;">📋 INFORMAÇÕES DO CURSO</h2>
+
+    <div class="info-blocks reveal">
+      <div class="info-block">
+        <span class="info-icon">🎂</span>
+        <div class="info-label">IDADE</div>
+        <div class="info-value">7 a 14 anos</div>
+      </div>
+      <div class="info-block">
+        <span class="info-icon">⏱️</span>
+        <div class="info-label">DURAÇÃO</div>
+        <div class="info-value">6 horas</div>
+      </div>
+      <div class="info-block">
+        <span class="info-icon">📚</span>
+        <div class="info-label">CAPÍTULOS</div>
+        <div class="info-value">3 aulas</div>
+      </div>
+      <div class="info-block">
+        <span class="info-icon">🎮</span>
+        <div class="info-label">FERRAMENTA</div>
+        <div class="info-value">Minecraft EDU</div>
+      </div>
+      <div class="info-block">
+        <span class="info-icon">📖</span>
+        <div class="info-label">PRÉ-REQUISITO</div>
+        <div class="info-value">Só saber ler!</div>
+      </div>
+    </div>
+
+    <!-- DATAS -->
+    <div style="margin-top:64px;">
+      <h3 class="section-title reveal" style="font-size:clamp(12px,2vw,18px);margin-bottom:12px;color:#1A1A2E;">📅 QUANDO VAI ACONTECER?</h3>
+      <p class="section-sub reveal" style="margin-bottom:40px;">3 sábados seguidos — todo mundo no mesmo ritmo!</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;max-width:800px;margin:0 auto;" class="reveal">
+
+        <div style="border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;transition:transform 0.15s;" onmouseover="this.style.transform='translate(-3px,-3px)'" onmouseout="this.style.transform='none'">
+          <div style="background:#2E88D4;padding:16px 20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px);"></div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:9px;color:rgba(255,255,255,0.7);position:relative;z-index:1;">AULA 01</div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:13px;color:white;margin-top:4px;position:relative;z-index:1;">CIRCUITO<br>DE GELO ⛵</div>
+          </div>
+          <div style="background:white;padding:20px;text-align:center;">
+            <div style="font-family:'Press Start 2P',monospace;font-size:20px;color:#2E88D4;line-height:1.4;">11/04</div>
+            <div style="font-family:'Nunito',sans-serif;font-size:15px;color:#555;font-weight:700;margin-top:4px;">Sábado · 10:00h</div>
+          </div>
+        </div>
+
+        <div style="border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;transition:transform 0.15s;" onmouseover="this.style.transform='translate(-3px,-3px)'" onmouseout="this.style.transform='none'">
+          <div style="background:#7B1FA2;padding:16px 20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px);"></div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:9px;color:rgba(255,255,255,0.7);position:relative;z-index:1;">AULA 02</div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:13px;color:white;margin-top:4px;position:relative;z-index:1;">CASA<br>FANTASMA 👻</div>
+          </div>
+          <div style="background:white;padding:20px;text-align:center;">
+            <div style="font-family:'Press Start 2P',monospace;font-size:20px;color:#7B1FA2;line-height:1.4;">18/04</div>
+            <div style="font-family:'Nunito',sans-serif;font-size:15px;color:#555;font-weight:700;margin-top:4px;">Sábado · 10:00h</div>
+          </div>
+        </div>
+
+        <div style="border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;transition:transform 0.15s;" onmouseover="this.style.transform='translate(-3px,-3px)'" onmouseout="this.style.transform='none'">
+          <div style="background:#E53935;padding:16px 20px;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px);"></div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:9px;color:rgba(255,255,255,0.7);position:relative;z-index:1;">AULA 03</div>
+            <div style="font-family:'Press Start 2P',monospace;font-size:13px;color:white;margin-top:4px;position:relative;z-index:1;">TIRO<br>AO ALVO 🏹</div>
+          </div>
+          <div style="background:white;padding:20px;text-align:center;">
+            <div style="font-family:'Press Start 2P',monospace;font-size:20px;color:#E53935;line-height:1.4;">25/04</div>
+            <div style="font-family:'Nunito',sans-serif;font-size:15px;color:#555;font-weight:700;margin-top:4px;">Sábado · 10:00h</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="pixel-divider-sand"></div>
+
+<!-- =================== QUOTE =================== -->
+<section class="quote-section">
+  <div class="quote-box reveal">
+    <span class="quote-mark">"</span>
+    <p class="quote-text">
+      Seu filho vai achar que está só jogando Minecraft. Na verdade, vai estar aprendendo a programar o futuro.
+    </p>
+    <div class="quote-author">— HAPPY CODE · O NOVO JEITO DE APRENDER</div>
+  </div>
+</section>
+
+<div class="pixel-divider-night"></div>
+
+<!-- =================== PRICING =================== -->
+<section style="background:#16213E;padding:80px 20px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.02) 0px,rgba(255,255,255,0.02) 1px,transparent 1px,transparent 40px),repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0px,rgba(255,255,255,0.02) 1px,transparent 1px,transparent 40px);pointer-events:none;"></div>
+
+  <!-- Personagens decorativos pixelados -->
+  <div style="position:absolute;left:2%;top:50%;transform:translateY(-50%);opacity:0.9;display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <!-- Steve pixel art SVG -->
+    <svg width="48" height="72" viewBox="0 0 12 18" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;">
+      <!-- cabeça -->
+      <rect x="2" y="0" width="8" height="8" fill="#C68642"/>
+      <rect x="3" y="2" width="2" height="2" fill="#fff"/>
+      <rect x="7" y="2" width="2" height="2" fill="#fff"/>
+      <rect x="3" y="2" width="1" height="1" fill="#333"/>
+      <rect x="7" y="2" width="1" height="1" fill="#333"/>
+      <rect x="4" y="5" width="4" height="1" fill="#8B4513"/>
+      <!-- corpo -->
+      <rect x="2" y="8" width="8" height="5" fill="#3a7bd5"/>
+      <rect x="2" y="8" width="8" height="1" fill="#2a5aa0"/>
+      <!-- braços -->
+      <rect x="0" y="8" width="2" height="5" fill="#C68642"/>
+      <rect x="10" y="8" width="2" height="5" fill="#C68642"/>
+      <!-- pernas -->
+      <rect x="2" y="13" width="3" height="5" fill="#2e5ea8"/>
+      <rect x="7" y="13" width="3" height="5" fill="#2e5ea8"/>
+    </svg>
+    <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#aaa;">STEVE</div>
+  </div>
+
+  <div style="position:absolute;right:2%;top:50%;transform:translateY(-50%);opacity:0.9;display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <!-- Creeper pixel art SVG -->
+    <svg width="48" height="72" viewBox="0 0 12 18" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;">
+      <!-- cabeça -->
+      <rect x="2" y="0" width="8" height="8" fill="#4CAF50"/>
+      <rect x="3" y="2" width="2" height="2" fill="#1B5E20"/>
+      <rect x="7" y="2" width="2" height="2" fill="#1B5E20"/>
+      <rect x="4" y="4" width="4" height="1" fill="#1B5E20"/>
+      <rect x="3" y="5" width="2" height="2" fill="#1B5E20"/>
+      <rect x="7" y="5" width="2" height="2" fill="#1B5E20"/>
+      <!-- corpo -->
+      <rect x="3" y="8" width="6" height="5" fill="#388E3C"/>
+      <!-- pernas -->
+      <rect x="3" y="13" width="2" height="5" fill="#2E7D32"/>
+      <rect x="7" y="13" width="2" height="5" fill="#2E7D32"/>
+    </svg>
+    <div style="font-family:'Press Start 2P',monospace;font-size:6px;color:#aaa;">CREEPER</div>
+  </div>
+
+  <div class="container" style="position:relative;z-index:1;">
+    <h2 class="section-title reveal" style="color:#FFD700;">💰 INVESTIMENTO</h2>
+    <p class="section-sub reveal" style="color:#aaa;">Escolha a melhor forma de garantir a vaga do seu filho</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px;max-width:720px;margin:0 auto;">
+
+      <!-- Parcelado -->
+      <div class="reveal" style="background:rgba(255,255,255,0.05);border:4px solid #5C9A27;position:relative;box-shadow:8px 8px 0 #3E7A0E;transition:transform 0.2s;" onmouseover="this.style.transform='translate(-4px,-4px)'" onmouseout="this.style.transform='none'">
+        <div style="background:#5C9A27;padding:20px 24px;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px);"></div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:10px;color:rgba(255,255,255,0.8);margin-bottom:8px;position:relative;z-index:1;">PARCELADO</div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:14px;color:white;line-height:1.6;position:relative;z-index:1;">CARTÃO DE<br>CRÉDITO</div>
+          <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;z-index:1;">💳</span>
+        </div>
+        <div style="padding:32px 24px;text-align:center;">
+          <div style="font-family:'Press Start 2P',monospace;font-size:11px;color:#aaa;margin-bottom:8px;">3X SEM JUROS DE</div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:32px;color:#FFD700;line-height:1.2;text-shadow:4px 4px 0 #8B6000;">R$ 143<span style="font-size:16px;">,00</span></div>
+          <div style="font-family:'Nunito',sans-serif;font-size:14px;color:#888;margin-top:8px;">Total: R$ 429,00</div>
+          <div style="margin-top:24px;padding-top:24px;border-top:2px dashed rgba(255,255,255,0.1);">
+            <a href="https://wa.me/5554992178125?text=Ol%C3%A1!%20Quero%20garantir%20a%20vaga%20no%20Minecraft%20Constru%C3%A7%C3%B5es%20Criativas%20I%20-%20parcelado%203x%20de%20R%24143%2C00%20%F0%9F%8E%AE" target="_blank" style="font-family:'Press Start 2P',monospace;font-size:9px;background:#5C9A27;color:white;padding:14px 20px;box-shadow:0 6px 0 #3E7A0E,0 0 0 3px #000;text-decoration:none;display:inline-block;">▶ QUERO PARCELAR</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIX -->
+      <div class="reveal" style="background:rgba(255,255,255,0.05);border:4px solid #FFD700;position:relative;box-shadow:8px 8px 0 #8B6000;transition:transform 0.2s;margin-top:16px;" onmouseover="this.style.transform='translate(-4px,-4px)'" onmouseout="this.style.transform='none'">
+        <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);background:#FFD700;color:#000;font-family:'Press Start 2P',monospace;font-size:8px;padding:6px 14px;white-space:nowrap;box-shadow:3px 3px 0 #8B6000,0 0 0 3px #000;z-index:2;">⭐ MELHOR OPÇÃO</div>
+        <div style="background:linear-gradient(135deg,#8B6000,#FFD700);padding:20px 24px;position:relative;overflow:hidden;">
+          <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 8px);"></div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:10px;color:rgba(0,0,0,0.6);margin-bottom:8px;position:relative;z-index:1;">À VISTA</div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:14px;color:#000;line-height:1.6;position:relative;z-index:1;">PIX COM<br>3% DESCONTO</div>
+          <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;z-index:1;">⚡</span>
+        </div>
+        <div style="padding:32px 24px;text-align:center;">
+          <div style="font-family:'Press Start 2P',monospace;font-size:11px;color:#aaa;margin-bottom:8px;">PAGUE TUDO DE UMA VEZ</div>
+          <div style="font-family:'Press Start 2P',monospace;font-size:32px;color:#FFD700;line-height:1.2;text-shadow:4px 4px 0 #8B6000;">R$ 417<span style="font-size:16px;">,00</span></div>
+          <div style="display:inline-block;margin-top:8px;background:#E53935;color:white;font-family:'Press Start 2P',monospace;font-size:8px;padding:4px 10px;box-shadow:2px 2px 0 #8B0000;">ECONOMIZE R$ 12,00</div>
+          <div style="margin-top:24px;padding-top:24px;border-top:2px dashed rgba(255,255,255,0.1);">
+            <a href="https://wa.me/5554992178125?text=Ol%C3%A1!%20Quero%20garantir%20a%20vaga%20no%20Minecraft%20Constru%C3%A7%C3%B5es%20Criativas%20I%20-%20PIX%20%C3%A0%20vista%20R%24417%2C00%20%F0%9F%8E%AE" target="_blank" style="font-family:'Press Start 2P',monospace;font-size:9px;background:#FFD700;color:#000;padding:14px 20px;box-shadow:0 6px 0 #8B6000,0 0 0 3px #000;text-decoration:none;display:inline-block;">▶ PAGAR NO PIX</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<!-- =================== CTA FINAL =================== -->
+<section class="cta-section" id="inscricao">
+  <div class="stars" id="stars"></div>
+  <div class="container" style="position:relative;z-index:1;text-align:center;">
+    <div class="cta-big reveal">
+      SEU FILHO PRONTO PARA<br><span>CONSTRUIR O FUTURO?</span>
+    </div>
+    <p class="cta-desc reveal">Vagas limitadas — cada turma é pequena para garantir aprendizado de qualidade</p>
+    <a href="https://wa.me/5554992178125?text=Ol%C3%A1!%20Quero%20garantir%20a%20vaga%20no%20curso%20Minecraft%20Constru%C3%A7%C3%B5es%20Criativas%20I%20%F0%9F%8E%AE" target="_blank" class="cta-btn reveal">▶ GARANTIR VAGA AGORA</a>
+  </div>
+</section>
+
+<div class="pixel-divider"></div>
+
+<footer>
+  <span>HAPPY CODE</span> · CONSTRUÇÕES CRIATIVAS I · MINECRAFT EDUCATION EDITION<br>
+  © 2025 Happy Code · O Novo Jeito de Aprender
+</footer>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrollTop = window.scrollY || doc.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    if (Math.random() > 0.7) { star.style.width = '6px'; star.style.height = '6px'; }
+    starsContainer.appendChild(star);
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
